@@ -1,4 +1,5 @@
 import React from 'react';
+import update from 'react-addons-update';
 
 class App extends React.Component {
     render(){
@@ -21,6 +22,16 @@ class Contacts extends React.Component {
             ]
         };
     }
+
+    _insertContact(name, phone){
+        let newState = update(this.state, {
+            contactData: {
+                $push: [{"name": name, "phone": phone}]
+            }
+        });
+        this.setState(newState);
+    }
+
     render(){
         return(
             <div>
@@ -34,7 +45,7 @@ class Contacts extends React.Component {
                         })
                     }
                 </ul>
-                <ContactCreator/>
+                <ContactCreator onInsert={this._insertContact.bind(this)}/>
             </div>
         );
     }
@@ -49,7 +60,7 @@ class ContactInfo extends React.Component {
 }
 
 class ContactCreator extends React.Component{
-    constructor(props)
+    constructor(props){
         super(props);
         this.state = {
             name:'kong333',
@@ -63,13 +74,21 @@ class ContactCreator extends React.Component{
         this.setState(nextState);
     }
 
+    handleClick(){
+        this.props.onInsert(this.state.name, this.state.phone);
+        this.setState = ({
+            name : '',
+            phone : ''
+        });
+    }
+
     render(){
         return(
             <div>
                 <p>
                     <input type="text" name="name" placeholder="name" value={this.state.name} onChange={this.handleChange.bind(this)}/>
                     <input type="text" name="phone" placeholder="phone" value={this.state.phone} onChange={this.handleChange.bind(this)}/>
-                    <button>Insert</button>
+                    <button onClick={this.handleClick.bind(this)}>Insert</button>
                 </p>
             </div>
         )
